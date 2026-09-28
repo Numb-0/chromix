@@ -46,7 +46,6 @@ programs.chromix.themes ──(Nix: matugen × templates)──▶ /nix/store/�
 inputs.chromix = {
   url = "github:Numb-0/chromix";
   inputs.nixpkgs.follows = "nixpkgs";
-  inputs.home-manager.follows = "home-manager";
 };
 
 # home-manager
@@ -65,24 +64,28 @@ programs.chromix = {
 
 ## Targets
 
-Built-in targets switch on with the matching Home Manager module.
-Override `programs.chromix.targets.<name>.enable` either way.
+A built-in target switches on with its app's Home Manager module
+(`programs.kitty.enable` and so on). Turn one off to leave that app
+alone:
 
-| Target | Wired in through | Live reload |
-|---|---|---|
-| `morph-shell` | `~/.local/state/morph-shell/colors.json` | `morph-shell ipc call palette reload`, fades |
-| `kitty` | `include` in `programs.kitty.extraConfig` | `SIGUSR1` |
-| `hyprland` | `pcall(dofile, …)` (Lua config) or `source =` (hyprlang) in `extraConfig` | `hyprctl reload` |
-| `gtk` | `@import` in `gtk.gtk{3,4}.extraCss`, or `gtk.css` linked in | libadwaita follows `color-scheme`; `gtk.css` on next launch |
-| `neovim` | `mini.base16` + `dofile` in `programs.neovim` | `luafile` over every nvim server |
-
-**Not using the Home Manager module for an app?** Turn the target on and
-point the app at the file yourself. For Neovim with `vim.pack`:
-
-```lua
-vim.pack.add({ "https://github.com/nvim-mini/mini.base16" })
-pcall(dofile, vim.fn.expand("~/.local/state/chromix/current/nvim/colors.lua"))
+```nix
+programs.chromix.targets.gtk.enable = false;
 ```
+
+Without the module, a target does nothing, even when enabled: no theme
+is rendered or linked for an app that is not there.
+
+| Target | Needs | Wired in through | Live reload |
+|---|---|---|---|
+| `morph-shell` | `programs.morph-shell` | `~/.local/state/morph-shell/colors.json` | `morph-shell ipc call palette reload`, fades |
+| `kitty` | `programs.kitty` | `include` in `programs.kitty.extraConfig` | `SIGUSR1` |
+| `hyprland` | `wayland.windowManager.hyprland` | `pcall(dofile, …)` (Lua config) or `source =` (hyprlang) in `extraConfig` | `hyprctl reload` |
+| `gtk` | `gtk` | `@import` in `gtk.gtk{3,4}.extraCss` | libadwaita follows `color-scheme`; `gtk.css` on next launch |
+| `neovim` | `programs.neovim` | `mini.base16` + `dofile` in `programs.neovim` | `luafile` over every nvim server |
+
+**Configuring an app outside Home Manager?** Add it as
+[your own target](#your-own-targets) instead, reusing the built-in
+template, and point the app at the file yourself.
 
 **Coming from Stylix?** Turn off its targets for the apps chromix themes,
 or the two will overwrite each other (`stylix.targets.kitty.enable = false;`

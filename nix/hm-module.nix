@@ -88,7 +88,19 @@ self: {
     };
   };
 
-  enabledTargets = lib.filterAttrs (_: t: t.enable) cfg.targets;
+  # A built-in target follows its app's Home Manager module: on by
+  # default with it, and never rendered or linked without it, even if
+  # enabled. Your own targets have no module to wait on.
+  programEnabled = {
+    morph-shell = config.programs.morph-shell.enable or false;
+    kitty = config.programs.kitty.enable;
+    hyprland = hyprland.enable;
+    gtk = config.gtk.enable;
+    neovim = config.programs.neovim.enable;
+  };
+
+  enabledTargets = lib.filterAttrs (name: t: t.enable && (programEnabled.${name} or true)) cfg.targets;
+  active = name: enabledTargets ? ${name};
 
   generator = {
     inherit (cfg.wallpaper) type contrast;
@@ -190,8 +202,9 @@ in {
       type = types.attrsOf targetModule;
       default = {};
       description = ''
-        Apps to theme. The built-in ones are enabled when their Home
-        Manager module is; add your own with a template and an output.
+        Apps to theme. A built-in target is on while its app's Home
+        Manager module is, unless you turn it off, and never without
+        it; add your own with a template and an output.
       '';
     };
   };
@@ -239,7 +252,7 @@ in {
 
       programs.chromix.targets = {
         morph-shell = {
-          enable = mkDefault (config.programs.morph-shell.enable or false);
+          enable = mkDefault programEnabled.morph-shell;
           template = mkDefault ../templates/morph-shell.json;
           output = mkDefault "morph-shell/colors.json";
           # Required: the shell watches its colours file, but the watch
@@ -252,7 +265,7 @@ in {
         };
 
         kitty = {
-          enable = mkDefault config.programs.kitty.enable;
+          enable = mkDefault programEnabled.kitty;
           template = mkDefault ../templates/kitty.conf;
           output = mkDefault "kitty/colors.conf";
           reload = mkDefault ''
@@ -261,7 +274,7 @@ in {
         };
 
         hyprland = {
-          enable = mkDefault hyprland.enable;
+          enable = mkDefault programEnabled.hyprland;
           template = mkDefault (
             if hyprlandLua
             then ../templates/hyprland.lua
@@ -280,7 +293,7 @@ in {
         };
 
         gtk = {
-          enable = mkDefault config.gtk.enable;
+          enable = mkDefault programEnabled.gtk;
           template = mkDefault ../templates/gtk.css;
           output = mkDefault "gtk/gtk.css";
           # Running GTK apps do not reread gtk.css, but libadwaita ones
@@ -292,7 +305,7 @@ in {
         };
 
         neovim = {
-          enable = mkDefault config.programs.neovim.enable;
+          enable = mkDefault programEnabled.neovim;
           template = mkDefault ../templates/nvim.lua;
           output = mkDefault "nvim/colors.lua";
           reload = mkDefault ''
@@ -307,17 +320,17 @@ in {
       };
     }
 
-    (mkIf cfg.targets.morph-shell.enable {
+    (mkIf (active "morph-shell") {
       xdg.stateFile."morph-shell/colors.json".source = link cfg.targets.morph-shell.output;
     })
 
-    (mkIf (cfg.targets.kitty.enable && config.programs.kitty.enable) {
+    (mkIf (active "kitty") {
       programs.kitty.extraConfig = ''
         include ${current}/${cfg.targets.kitty.output}
       '';
     })
 
-    (mkIf (cfg.targets.hyprland.enable && hyprland.enable) {
+    (mkIf (active "hyprland") {
       wayland.windowManager.hyprland.extraConfig =
         if hyprlandLua
         then ''
@@ -328,19 +341,13 @@ in {
         '';
     })
 
-    # With the gtk module on, it owns gtk.css, so import from there;
-    # otherwise link the file in directly.
-    (mkIf (cfg.targets.gtk.enable && config.gtk.enable) {
+    # The gtk module owns gtk.css, so import from there.
+    (mkIf (active "gtk") {
       gtk.gtk3.extraCss = ''@import url("file://${current}/${cfg.targets.gtk.output}");'';
       gtk.gtk4.extraCss = ''@import url("file://${current}/${cfg.targets.gtk.output}");'';
     })
 
-    (mkIf (cfg.targets.gtk.enable && !config.gtk.enable) {
-      xdg.configFile."gtk-3.0/gtk.css".source = link cfg.targets.gtk.output;
-      xdg.configFile."gtk-4.0/gtk.css".source = link cfg.targets.gtk.output;
-    })
-
-    (mkIf (cfg.targets.neovim.enable && config.programs.neovim.enable) {
+    (mkIf (active "neovim") {
       programs.neovim.plugins = [pkgs.vimPlugins.mini-base16];
       programs.neovim.extraLuaConfig = ''
         pcall(dofile, "${current}/${cfg.targets.neovim.output}")
