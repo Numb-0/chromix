@@ -13,29 +13,60 @@ end
 
 vim.o.background = "{{mode}}"
 
--- base00-07 are the surface ramp, so the editor sits on the same
--- colours as the shell. The accents map M3's primary and tertiary onto
--- functions and constants, and take the fixed hues for the rest so
--- errors stay red and strings stay green.
+-- The mapping from InioX/matugen-themes (templates/neovim).
 base16.setup({
   palette = {
-    base00 = "{{colors.surface.default.hex}}",
-    base01 = "{{colors.surface_container.default.hex}}",
-    base02 = "{{colors.surface_container_highest.default.hex}}",
-    base03 = "{{colors.outline.default.hex}}",
+    base00 = "{{colors.background.default.hex}}",
+    base01 = "{{colors.surface_container_lowest.default.hex}}",
+    base02 = "{{colors.surface_container_low.default.hex}}",
+    base03 = "{{colors.outline_variant.default.hex}}",
     base04 = "{{colors.on_surface_variant.default.hex}}",
     base05 = "{{colors.on_surface.default.hex}}",
-    base06 = "{{colors.on_surface.default.hex}}",
-    base07 = "{{colors.on_primary_container.default.hex}}",
-    base08 = "{{colors.red.default.hex}}",
+    base06 = "{{colors.inverse_on_surface.default.hex}}",
+    base07 = "{{colors.surface_bright.default.hex}}",
+    base08 = "{{colors.tertiary.default.hex | lighten: -5}}",
     base09 = "{{colors.tertiary.default.hex}}",
-    base0A = "{{colors.yellow.default.hex}}",
-    base0B = "{{colors.green.default.hex}}",
-    base0C = "{{colors.cyan.default.hex}}",
-    base0D = "{{colors.primary.default.hex}}",
-    base0E = "{{colors.magenta.default.hex}}",
-    base0F = "{{colors.secondary.default.hex}}",
+    base0A = "{{colors.secondary.default.hex}}",
+    base0B = "{{colors.primary.default.hex}}",
+    base0C = "{{colors.tertiary_container.default.hex}}",
+    base0D = "{{colors.primary_container.default.hex}}",
+    base0E = "{{colors.secondary_container.default.hex}}",
+    base0F = "{{colors.secondary.default.hex | lighten: -10}}",
   },
 })
 
 vim.g.colors_name = "chromix"
+
+-- base16 alone leaves some groups with poor contrast. Both the classic
+-- and the Treesitter names, as mini.base16 sets them separately.
+local function set_hl(groups, value)
+  for _, group in ipairs(groups) do
+    vim.api.nvim_set_hl(0, group, value)
+  end
+end
+
+set_hl({ "Visual" }, {
+  bg = "{{colors.primary_container.default.hex}}",
+  fg = "{{colors.on_primary_container.default.hex}}",
+})
+
+set_hl({ "String", "@string" }, {
+  fg = "{{colors.tertiary.default.hex | lighten: -15.0}}",
+})
+
+set_hl({ "Comment", "@comment" }, {
+  fg = "{{colors.outline.default.hex}}",
+  italic = true,
+})
+
+set_hl({ "@function.method", "@function.method.call" }, {
+  fg = "{{colors.tertiary.default.hex}}",
+})
+
+set_hl({ "Function", "@function", "@function.call" }, {
+  fg = "{{colors.secondary.default.hex}}",
+})
+
+set_hl({ "Keyword", "@keyword", "@keyword.function", "@keyword.repeat" }, {
+  fg = "{{colors.inverse_primary.default.hex}}",
+})

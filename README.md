@@ -83,9 +83,9 @@ is rendered or linked for an app that is not there.
 | `gtk` | `gtk` | `@import` in `gtk.gtk{3,4}.extraCss` | libadwaita follows `color-scheme`; `gtk.css` on next launch |
 | `neovim` | `programs.neovim` | `mini.base16` + `dofile` in `programs.neovim` | `luafile` over every nvim server |
 
-**Configuring an app outside Home Manager?** Add it as
-[your own target](#your-own-targets) instead, reusing the built-in
-template, and point the app at the file yourself.
+**Configuring an app outside Home Manager?** Enable its target anyway
+(`targets.neovim.enable = true;`): the file is rendered and reloaded,
+just not wired in, so point the app at it yourself.
 
 **Coming from Stylix?** Turn off its targets for the apps chromix themes,
 or the two will overwrite each other (`stylix.targets.kitty.enable = false;`

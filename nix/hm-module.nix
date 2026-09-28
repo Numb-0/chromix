@@ -89,8 +89,9 @@ self: {
   };
 
   # A built-in target follows its app's Home Manager module: on by
-  # default with it, and never rendered or linked without it, even if
-  # enabled. Your own targets have no module to wait on.
+  # default with it, and only wired into that module when it is on.
+  # Enabled without it, the file is still rendered, for an app you
+  # configure yourself. Your own targets have no module to wait on.
   programEnabled = {
     morph-shell = config.programs.morph-shell.enable or false;
     kitty = config.programs.kitty.enable;
@@ -99,8 +100,8 @@ self: {
     neovim = config.programs.neovim.enable;
   };
 
-  enabledTargets = lib.filterAttrs (name: t: t.enable && (programEnabled.${name} or true)) cfg.targets;
-  active = name: enabledTargets ? ${name};
+  enabledTargets = lib.filterAttrs (_: t: t.enable) cfg.targets;
+  active = name: enabledTargets ? ${name} && (programEnabled.${name} or true);
 
   generator = {
     inherit (cfg.wallpaper) type contrast;
