@@ -10,7 +10,10 @@ hl.config({
   },
   decoration = {
     shadow = {
-      color = "rgba({{colors.shadow.default.hex_stripped}}ee)",
+      -- M3's shadow role is plain black; a deep tone of the muted
+      -- secondary hue keeps the shadow tinted to the theme, and holds
+      -- the same in light and dark.
+      color = "rgba({{colors.on_secondary_fixed.default.hex_stripped}}ee)",
     },
   },
 })
