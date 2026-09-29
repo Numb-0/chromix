@@ -13,32 +13,44 @@ end
 
 vim.o.background = "{{mode}}"
 
--- The mapping from InioX/matugen-themes (templates/neovim).
+-- base00 to base07 run from the page to the text in either mode, so
+-- they come from the surface roles, which flip with it. The page is
+-- the high container, as in kitty, so nvim sits flush in the terminal.
+-- base01 is a step off it for the cursor line and gutter (in light the
+-- highest container is too close, so the dim surface); base02 marks
+-- separators, matching brackets and references; base03 is comments and
+-- line numbers.
+--
+-- base08 to base0e are the fixed hues, which matugen nudges towards the
+-- seed and tones for the mode, so each reads on the page as well as the
+-- next and no seed makes two of them alike. (matugen's own base16 has
+-- one accent set for both modes, too light on a light page, and only
+-- four hues among its seven.) base0f, delimiters, stays neutral.
 base16.setup({
   palette = {
-    base00 = "{{colors.background.default.hex}}",
-    base01 = "{{colors.surface_container_lowest.default.hex}}",
-    base02 = "{{colors.surface_container_low.default.hex}}",
-    base03 = "{{colors.outline_variant.default.hex}}",
+    base00 = "{{colors.surface_container_high.default.hex}}",
+    base01 = "<* if {{ is_dark_mode }} *>{{colors.surface_container_highest.default.hex}}<* else *>{{colors.surface_dim.default.hex}}<* endif *>",
+    base02 = "{{colors.outline_variant.default.hex}}",
+    base03 = "{{colors.outline.default.hex}}",
     base04 = "{{colors.on_surface_variant.default.hex}}",
     base05 = "{{colors.on_surface.default.hex}}",
-    base06 = "{{colors.inverse_on_surface.default.hex}}",
-    base07 = "{{colors.surface_bright.default.hex}}",
-    base08 = "{{colors.tertiary.default.hex | lighten: -5}}",
-    base09 = "{{colors.tertiary.default.hex}}",
-    base0A = "{{colors.secondary.default.hex}}",
-    base0B = "{{colors.primary.default.hex}}",
-    base0C = "{{colors.tertiary_container.default.hex}}",
-    base0D = "{{colors.primary_container.default.hex}}",
-    base0E = "{{colors.secondary_container.default.hex}}",
-    base0F = "{{colors.secondary.default.hex | lighten: -10}}",
+    base06 = "{{colors.inverse_surface.default.hex}}",
+    base07 = "{{colors.on_surface.default.hex}}",
+    base08 = "{{colors.red.default.hex}}",
+    base09 = "{{colors.orange.default.hex}}",
+    base0A = "{{colors.yellow.default.hex}}",
+    base0B = "{{colors.green.default.hex}}",
+    base0C = "{{colors.cyan.default.hex}}",
+    base0D = "{{colors.blue.default.hex}}",
+    base0E = "{{colors.magenta.default.hex}}",
+    base0F = "{{colors.on_surface_variant.default.hex}}",
   },
 })
 
 vim.g.colors_name = "chromix"
 
--- base16 alone leaves some groups with poor contrast. Both the classic
--- and the Treesitter names, as mini.base16 sets them separately.
+-- The seed's own roles where the eye lands: the selection, the cursor
+-- line number and the status line.
 local function set_hl(groups, value)
   for _, group in ipairs(groups) do
     vim.api.nvim_set_hl(0, group, value)
@@ -50,23 +62,20 @@ set_hl({ "Visual" }, {
   fg = "{{colors.on_primary_container.default.hex}}",
 })
 
-set_hl({ "String", "@string" }, {
-  fg = "{{colors.tertiary.default.hex | lighten: -15.0}}",
+set_hl({ "CursorLineNr" }, {
+  bg = "<* if {{ is_dark_mode }} *>{{colors.surface_container_highest.default.hex}}<* else *>{{colors.surface_dim.default.hex}}<* endif *>",
+  fg = "{{colors.primary.default.hex}}",
+  bold = true,
 })
 
+set_hl({ "StatusLine" }, {
+  bg = "{{colors.secondary_container.default.hex}}",
+  fg = "{{colors.on_secondary_container.default.hex}}",
+})
+
+-- Both the classic and the Treesitter name, as mini.base16 sets them
+-- separately.
 set_hl({ "Comment", "@comment" }, {
   fg = "{{colors.outline.default.hex}}",
   italic = true,
-})
-
-set_hl({ "@function.method", "@function.method.call" }, {
-  fg = "{{colors.tertiary.default.hex}}",
-})
-
-set_hl({ "Function", "@function", "@function.call" }, {
-  fg = "{{colors.secondary.default.hex}}",
-})
-
-set_hl({ "Keyword", "@keyword", "@keyword.function", "@keyword.repeat" }, {
-  fg = "{{colors.inverse_primary.default.hex}}",
 })

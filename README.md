@@ -12,9 +12,7 @@ chromix wall ~/walls/x.png  # a theme from an image, generated on the spot
 chromix list | status | refresh
 ```
 
-Inspired by [vogix](https://github.com/i-am-logger/vogix) (prebuilt
-themes behind one symlink) and [Stylix](https://github.com/danth/stylix)
-(declarative app targets).
+Inspired by [vogix](https://github.com/i-am-logger/vogix) and [Stylix](https://github.com/danth/stylix)
 
 ## How it works
 
@@ -88,13 +86,26 @@ is rendered or linked for an app that is not there.
 | `hyprlock` | `programs.hyprlock` | `source =` in `programs.hyprlock.settings`: `$m3…` colour variables and `$wallpaper` for your widgets | none needed, read on every lock |
 | `hyprpaper` | `services.hyprpaper` | `source =` in `services.hyprpaper.settings`: the theme's image on every monitor (none for colour themes) | restarts `hyprpaper.service` |
 
+**How the base16 palette is built.** A base16 scheme needs eight
+neutrals and eight accent hues, more than Material's roles provide.
+matugen's own base16 output has only four distinct hues among its seven
+accents, and one accent set for both modes. chromix builds the palette
+itself. The `neovim` target uses it through `mini.base16`, and any
+base16 template of yours can use the same mapping:
+
+| Slots | Used for | Taken from |
+|---|---|---|
+| `base00`–`base07` | page, cursor line, separators, comments, text | the seed's surface and outline roles, so they switch with the mode |
+| `base08`–`base0E` | variables, constants, types, strings, escapes, functions, keywords | the red, orange, yellow, green, cyan, blue and magenta custom colours |
+| `base0F` | delimiters | `on_surface_variant`, kept neutral |
+
+Each accent keeps its own hue and leans only slightly towards the seed,
+so any seed gives seven distinct hues, toned to read on the page in
+either mode.
+
 **Configuring an app outside Home Manager?** Enable its target anyway
 (`targets.neovim.enable = true;`): the file is rendered and reloaded,
 just not wired in, so point the app at it yourself.
-
-**Coming from Stylix?** Turn off its targets for the apps chromix themes,
-or the two will overwrite each other (`stylix.targets.kitty.enable = false;`
-and so on).
 
 ### Your own targets
 
@@ -110,7 +121,10 @@ programs.chromix.targets.foot = {
 ```
 
 Templates see every M3 role (`colors.<role>`), plus the custom colours:
-red, green, yellow, blue, magenta and cyan for terminal ANSI colours, and
-success and warning. matugen nudges each towards the seed while keeping
-its hue, and generates `on_`, `_container` and `on_…_container` tones for
-each. Change a hue with `programs.chromix.customColors.red = "#…";`.
+red, green, yellow, blue, magenta and cyan for terminal ANSI colours,
+orange to complete the base16 palette, and success and warning.
+The seed stays the centre and the custom colours are pulled towards it.
+matugen rotates each one's hue a little towards the seed's hue (by at most about 15°),
+so red stays red. It thenpicks tones that read on the mode's page and generates `on_`,
+`_container` and `on_…_container` tones for each. Change a hue with
+`programs.chromix.customColors.red = "#…";`.

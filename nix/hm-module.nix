@@ -208,9 +208,9 @@ in {
         Extra colours matugen generates alongside the scheme, each
         harmonised towards the seed with on-, container and
         on-container tones. The built-in templates need red, green,
-        yellow, blue, magenta and cyan (terminal colours) and success
-        and warning (states Material has no role for); set a key to
-        change its hue.
+        yellow, blue, magenta and cyan (terminal colours), orange (for
+        Neovim's base16 palette) and success and warning (states
+        Material has no role for); set a key to change its hue.
       '';
     };
 
@@ -262,6 +262,7 @@ in {
         blue = "#3e8ef7";
         magenta = "#b659d8";
         cyan = "#12a5b0";
+        orange = "#f5700a";
         success = "#46a758";
         warning = "#e2a336";
       };
