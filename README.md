@@ -85,6 +85,8 @@ is rendered or linked for an app that is not there.
 | `gtk` | `gtk` | `@import` in `gtk.gtk{3,4}.extraCss` | libadwaita follows `color-scheme`; `gtk.css` on next launch |
 | `neovim` | `programs.neovim` | `mini.base16` + `dofile` in `programs.neovim` | `luafile` over every nvim server |
 | `btop` | `programs.btop` | `~/.config/btop/themes/chromix.theme` + `color_theme` in `programs.btop.settings` | `SIGUSR2` |
+| `hyprlock` | `programs.hyprlock` | `source =` in `programs.hyprlock.settings`: `$m3…` colour variables and `$wallpaper` for your widgets | none needed, read on every lock |
+| `hyprpaper` | `services.hyprpaper` | `source =` in `services.hyprpaper.settings`: the theme's image on every monitor (none for colour themes) | restarts `hyprpaper.service` |
 
 **Configuring an app outside Home Manager?** Enable its target anyway
 (`targets.neovim.enable = true;`): the file is rendered and reloaded,

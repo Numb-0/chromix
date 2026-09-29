@@ -108,6 +108,8 @@ self: {
     gtk = config.gtk.enable;
     neovim = config.programs.neovim.enable;
     btop = config.programs.btop.enable;
+    hyprlock = config.programs.hyprlock.enable;
+    hyprpaper = config.services.hyprpaper.enable;
   };
 
   enabledTargets = lib.filterAttrs (_: t: t.enable) cfg.targets;
@@ -341,6 +343,23 @@ in {
             ${pkgs.procps}/bin/pkill -USR2 -x btop || true
           '';
         };
+
+        # hyprlock reads its config on every start: nothing to reload.
+        hyprlock = {
+          enable = mkDefault programEnabled.hyprlock;
+          template = mkDefault ../templates/hyprlock.conf;
+          output = mkDefault "hyprlock/colors.conf";
+        };
+
+        # hyprpaper only reads its config on start.
+        hyprpaper = {
+          enable = mkDefault programEnabled.hyprpaper;
+          template = mkDefault ../templates/hyprpaper.conf;
+          output = mkDefault "hyprpaper/wallpaper.conf";
+          reload = mkDefault ''
+            systemctl --user try-restart hyprpaper.service
+          '';
+        };
       };
     }
 
@@ -383,5 +402,21 @@ in {
       xdg.configFile."btop/themes/chromix.theme".source = link cfg.targets.btop.output;
       programs.btop.settings.color_theme = "chromix";
     })
+
+    # sourceFirst puts this above the widgets that use its variables.
+    (mkIf (active "hyprlock") {
+      programs.hyprlock.settings.source = ["${current}/${cfg.targets.hyprlock.output}"];
+    })
+
+    (mkIf (active "hyprpaper") (let
+      # matugen renders {{image}} as "Null" for a colour-seeded theme.
+      imageless = lib.attrNames (lib.filterAttrs (_: t: t.image == null) cfg.themes);
+    in {
+      services.hyprpaper.settings.source = ["${current}/${cfg.targets.hyprpaper.output}"];
+
+      warnings = lib.optional (imageless != []) ''
+        programs.chromix.targets.hyprpaper: hyprpaper shows no wallpaper with themes made from a colour (${lib.concatStringsSep ", " imageless}).
+      '';
+    }))
   ]);
 }
