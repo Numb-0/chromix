@@ -53,12 +53,13 @@ generate() {
   jq -r --arg out "$work/out" '.targets[] | $out + "/" + .output' "$spec" |
     while read -r file; do mkdir -p "$(dirname "$file")"; done
 
-  local mode type contrast color image
+  local mode type contrast color image index
   mode="$(jq -r .mode "$spec")"
   type="$(jq -r .type "$spec")"
   contrast="$(jq -r .contrast "$spec")"
   color="$(jq -r '.source.color // empty' "$spec")"
   image="$(jq -r '.source.image // empty' "$spec")"
+  index="$(jq -r '.source.colorIndex // 0' "$spec")"
 
   local args=(-c "$work/config.toml" -q -m "$mode" -t "$type" --contrast "$contrast")
 
@@ -68,7 +69,7 @@ generate() {
     HOME="$work" matugen "${args[@]}" color hex "$color"
   elif [ -n "$image" ]; then
     # Without an index matugen stops to ask which colour to use.
-    HOME="$work" matugen "${args[@]}" image "$image" --source-color-index 0
+    HOME="$work" matugen "${args[@]}" image "$image" --source-color-index "$index"
   else
     die "spec has neither a colour nor an image: $spec"
   fi

@@ -57,6 +57,8 @@ programs.chromix = {
     ocean.color = "#1e88e5";
     ember = { color = "#e53935"; type = "scheme-expressive"; };
     forest.image = ./walls/forest.jpg;
+    # The second colour matugen pulls from the image, not the first.
+    dunes = { image = ./walls/dunes.png; colorIndex = 1; };
   };
   default = { theme = "ocean"; mode = "dark"; };
 };

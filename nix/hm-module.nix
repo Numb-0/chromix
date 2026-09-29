@@ -57,6 +57,15 @@ self: {
           example = lib.literalExpression "./walls/forest.jpg";
           description = "Image to take the seed colour from. Copied into the store.";
         };
+
+        colorIndex = mkOption {
+          type = types.ints.unsigned;
+          default = 0;
+          description = ''
+            Which of the colours matugen extracts from image to seed the
+            theme with, most prominent first. Only used with image.
+          '';
+        };
       }
       // schemeOptions;
   };
@@ -122,7 +131,10 @@ self: {
       source =
         if theme.color != null
         then {inherit (theme) color;}
-        else {image = "${theme.image}";};
+        else {
+          image = "${theme.image}";
+          inherit (theme) colorIndex;
+        };
       build = mode:
         buildTheme {
           inherit name mode source;
