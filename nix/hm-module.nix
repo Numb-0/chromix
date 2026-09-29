@@ -107,6 +107,7 @@ self: {
     hyprland = hyprland.enable;
     gtk = config.gtk.enable;
     neovim = config.programs.neovim.enable;
+    btop = config.programs.btop.enable;
   };
 
   enabledTargets = lib.filterAttrs (_: t: t.enable) cfg.targets;
@@ -330,6 +331,16 @@ in {
             fi
           '';
         };
+
+        # SIGUSR2 makes btop reread its config, and the theme with it.
+        btop = {
+          enable = mkDefault programEnabled.btop;
+          template = mkDefault ../templates/btop.theme;
+          output = mkDefault "btop/chromix.theme";
+          reload = mkDefault ''
+            ${pkgs.procps}/bin/pkill -USR2 -x btop || true
+          '';
+        };
       };
     }
 
@@ -365,6 +376,12 @@ in {
       programs.neovim.extraLuaConfig = ''
         pcall(dofile, "${current}/${cfg.targets.neovim.output}")
       '';
+    })
+
+    # btop looks themes up by name in its themes directory.
+    (mkIf (active "btop") {
+      xdg.configFile."btop/themes/chromix.theme".source = link cfg.targets.btop.output;
+      programs.btop.settings.color_theme = "chromix";
     })
   ]);
 }
