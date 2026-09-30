@@ -110,6 +110,7 @@ self: {
     btop = config.programs.btop.enable;
     hyprlock = config.programs.hyprlock.enable;
     hyprpaper = config.services.hyprpaper.enable;
+    yazi = config.programs.yazi.enable;
   };
 
   enabledTargets = lib.filterAttrs (_: t: t.enable) cfg.targets;
@@ -361,6 +362,19 @@ in {
             systemctl --user try-restart hyprpaper.service
           '';
         };
+
+        # app:theme rereads theme.toml and the flavor; receiver 0 sends
+        # it to every running yazi.
+        yazi = {
+          enable = mkDefault programEnabled.yazi;
+          template = mkDefault ../templates/yazi.toml;
+          output = mkDefault "yazi/flavor.toml";
+          reload = mkDefault ''
+            if command -v ya >/dev/null; then
+              ya emit-to 0 app:theme 2>/dev/null || true
+            fi
+          '';
+        };
       };
     }
 
@@ -419,5 +433,15 @@ in {
         programs.chromix.targets.hyprpaper: hyprpaper shows no wallpaper with themes made from a colour (${lib.concatStringsSep ", " imageless}).
       '';
     }))
+
+    # yazi picks a flavor per terminal mode; chromix's own follows the
+    # mode itself, so it serves both.
+    (mkIf (active "yazi") {
+      xdg.configFile."yazi/flavors/chromix.yazi/flavor.toml".source = link cfg.targets.yazi.output;
+      programs.yazi.theme.flavor = {
+        dark = "chromix";
+        light = "chromix";
+      };
+    })
   ]);
 }

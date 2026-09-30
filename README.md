@@ -85,6 +85,7 @@ is rendered or linked for an app that is not there.
 | `btop` | `programs.btop` | `~/.config/btop/themes/chromix.theme` + `color_theme` in `programs.btop.settings` | `SIGUSR2` |
 | `hyprlock` | `programs.hyprlock` | `source =` in `programs.hyprlock.settings`: `$m3…` colour variables and `$wallpaper` for your widgets | none needed, read on every lock |
 | `hyprpaper` | `services.hyprpaper` | `source =` in `services.hyprpaper.settings`: the theme's image on every monitor (none for colour themes) | restarts `hyprpaper.service` |
+| `yazi` | `programs.yazi` | `~/.config/yazi/flavors/chromix.yazi/flavor.toml` + `flavor` in `programs.yazi.theme` | `ya emit-to 0 app:theme` |
 
 **How the base16 palette is built.** A base16 scheme needs eight
 neutrals and eight accent hues, more than Material's roles provide.
