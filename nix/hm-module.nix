@@ -111,6 +111,7 @@ self: {
     hyprlock = config.programs.hyprlock.enable;
     hyprpaper = config.services.hyprpaper.enable;
     yazi = config.programs.yazi.enable;
+    yazi-syntax = config.programs.yazi.enable;
   };
 
   enabledTargets = lib.filterAttrs (_: t: t.enable) cfg.targets;
@@ -375,6 +376,15 @@ in {
             fi
           '';
         };
+
+        # Highlighting for yazi's code previews, from the flavor's
+        # tmtheme.xml. Nothing to reload: the yazi target's app:theme
+        # rereads the whole flavor.
+        yazi-syntax = {
+          enable = mkDefault programEnabled.yazi-syntax;
+          template = mkDefault ../templates/yazi-tmtheme.xml;
+          output = mkDefault "yazi/tmtheme.xml";
+        };
       };
     }
 
@@ -442,6 +452,10 @@ in {
         dark = "chromix";
         light = "chromix";
       };
+    })
+
+    (mkIf (active "yazi-syntax") {
+      xdg.configFile."yazi/flavors/chromix.yazi/tmtheme.xml".source = link cfg.targets.yazi-syntax.output;
     })
   ]);
 }
