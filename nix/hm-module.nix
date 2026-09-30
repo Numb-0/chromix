@@ -286,7 +286,7 @@ in {
           template = mkDefault ../templates/kitty.conf;
           output = mkDefault "kitty/colors.conf";
           reload = mkDefault ''
-            ${pkgs.procps}/bin/pkill -USR1 -x kitty || true
+            ${pkgs.procps}/bin/pkill -USR1 -x 'kitty|\.kitty-wrapped' || true
           '';
         };
 
@@ -341,7 +341,7 @@ in {
           template = mkDefault ../templates/btop.theme;
           output = mkDefault "btop/chromix.theme";
           reload = mkDefault ''
-            ${pkgs.procps}/bin/pkill -USR2 -x btop || true
+            ${pkgs.procps}/bin/pkill -USR2 -x 'btop|\.btop-wrapped' || true
           '';
         };
 
