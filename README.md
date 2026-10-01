@@ -86,6 +86,19 @@ is rendered or linked for an app that is not there.
 | `hyprlock` | `programs.hyprlock` | `source =` in `programs.hyprlock.settings`: `$m3…` colour variables and `$wallpaper` for your widgets | none needed, read on every lock |
 | `yazi` | `programs.yazi` | `~/.config/yazi/flavors/chromix.yazi/flavor.toml` + `flavor` in `programs.yazi.theme` | `ya emit-to 0 app:theme` |
 | `yazi-syntax` | `programs.yazi` | `~/.config/yazi/flavors/chromix.yazi/tmtheme.xml`: code previews in the neovim target's base16 colours | with the `yazi` target's `app:theme` |
+| `qt` | `qt` with `platformTheme.name = "qtct"` | `custom_palette` and `color_scheme_path` in `qt.qt{5,6}ctSettings`. Use the Fusion style: one with its own palette, such as adwaita-dark, ignores it | on next launch |
+| `fzf` | `programs.fzf` | `FZF_DEFAULT_OPTS_FILE` | next run |
+| `eza` | `programs.eza` | `~/.config/eza/theme.yml` | next run |
+| `fastfetch` | `programs.fastfetch` | `~/.config/fastfetch/config.jsonc`, the whole config (fastfetch has no includes), so leave `programs.fastfetch.settings` empty | next run |
+| `git` | `programs.git` | `include.path` in `programs.git.includes` | next command |
+| `imv` | `programs.imv` | `~/.config/imv/config`, so leave `programs.imv.settings` empty | next image |
+| `vim` | `programs.vim` | `source` in `programs.vim.extraConfig` | on next start |
+| `vscode` | `programs.vscode`, or VS Code installed any other way | a theme extension: through `profiles.default.extensions`, or dropped into `~/.vscode/extensions`. Pick *Chromix Dark* and *Chromix Light* as `workbench.preferredDarkColorTheme` / `preferredLightColorTheme` with `window.autoDetectColorScheme` | a mode switch, or *Developer: Reload Window* |
+| `firefox` | `programs.firefox` | `chrome/userChrome.css` in every declared profile that has no `userChrome`, and the stylesheet pref through `policies` | on next start |
+| `thunderbird` | `programs.thunderbird` | the same, with the pref in `programs.thunderbird.settings` | on next start |
+| `chromium` | `programs.chromium`, or Chromium installed any other way | `~/.local/share/chromix/chromium`, an unpacked theme: load it once with *Load unpacked* in `chrome://extensions` | *Reload* on the extension, or a restart |
+| `prismlauncher` | `programs.prismlauncher` | `themes/chromix/theme.json` and `ApplicationTheme` in `programs.prismlauncher.settings` | on next start |
+| `papirus` | `gtk.iconTheme.package = pkgs.papirus-icon-theme` | `~/.local/share/icons/Papirus-Chromix`: Papirus-Dark (Papirus-Light in light mode) with its folders in the Papirus colour nearest the seed. Set it as `gtk.iconTheme.name` | built on switch and on activation; GTK apps pick it up within seconds |
 
 **How the base16 palette is built.** A base16 scheme needs eight
 neutrals and eight accent hues, more than Material's roles provide.

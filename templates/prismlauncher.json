@@ -1,0 +1,29 @@
+{
+  "name": "Chromix",
+  "widgets": "Fusion",
+  "colors": {
+    "Window": "{{colors.surface.default.hex}}",
+    "WindowText": "{{colors.on_surface.default.hex}}",
+    "Base": "{{colors.surface_container_low.default.hex}}",
+    "AlternateBase": "{{colors.surface_container.default.hex}}",
+    "ToolTipBase": "{{colors.surface_container_highest.default.hex}}",
+    "ToolTipText": "{{colors.on_surface.default.hex}}",
+    "Text": "{{colors.on_surface.default.hex}}",
+    "Button": "{{colors.surface_container_high.default.hex}}",
+    "ButtonText": "{{colors.on_surface.default.hex}}",
+    "BrightText": "{{colors.error.default.hex}}",
+    "Link": "{{colors.primary.default.hex}}",
+    "Highlight": "{{colors.primary.default.hex}}",
+    "HighlightedText": "{{colors.on_primary.default.hex}}",
+    "fadeColor": "{{colors.surface.default.hex}}",
+    "fadeAmount": 0.5
+  },
+  "logColors": {
+    "Launcher": "{{colors.primary.default.hex}}",
+    "Error": "{{colors.error.default.hex}}",
+    "Warning": "{{colors.warning.default.hex}}",
+    "Debug": "{{colors.outline.default.hex}}",
+    "Fatal": "{{colors.on_error_container.default.hex}}",
+    "FatalHighlight": "{{colors.error_container.default.hex}}"
+  }
+}
