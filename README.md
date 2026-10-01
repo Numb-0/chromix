@@ -93,7 +93,7 @@ is rendered or linked for an app that is not there.
 | `git` | `programs.git` | `include.path` in `programs.git.includes` | next command |
 | `imv` | `programs.imv` | `~/.config/imv/config`, so leave `programs.imv.settings` empty | next image |
 | `vim` | `programs.vim` | `source` in `programs.vim.extraConfig` | on next start |
-| `vscode` | `programs.vscode`, or VS Code installed any other way | a theme extension: through `profiles.default.extensions`, or dropped into `~/.vscode/extensions`. Pick *Chromix Dark* and *Chromix Light* as `workbench.preferredDarkColorTheme` / `preferredLightColorTheme` with `window.autoDetectColorScheme` | a mode switch, or *Developer: Reload Window* |
+| `vscode` | `programs.vscode` | a theme extension in `profiles.default.extensions`. Pick *Chromix Dark* and *Chromix Light* as `workbench.preferredDarkColorTheme` / `preferredLightColorTheme` with `window.autoDetectColorScheme` | a mode switch, or *Developer: Reload Window* |
 | `firefox` | `programs.firefox` | `chrome/userChrome.css` in every declared profile that has no `userChrome`, and the stylesheet pref through `policies` | on next start |
 | `thunderbird` | `programs.thunderbird` | the same, with the pref in `programs.thunderbird.settings` | on next start |
 | `chromium` | `programs.chromium`, or Chromium installed any other way | `~/.local/share/chromix/chromium`, an unpacked theme: load it once with *Load unpacked* in `chrome://extensions` | *Reload* on the extension, or a restart |

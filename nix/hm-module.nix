@@ -126,11 +126,10 @@ self: {
     papirus = papirus != null;
   };
 
-  # Wired in without their app's module: their files land where the app
-  # looks whoever installed it (VS Code's extensions directory, a theme
-  # directory of chromix's own for Chromium). They are still only on by
-  # default with the module.
-  standalone = ["vscode" "chromium"];
+  # Wired in without their app's module: its files land in a theme
+  # directory of chromix's own, whoever installed Chromium. It is still
+  # only on by default with the module.
+  standalone = ["chromium"];
 
   enabledTargets = lib.filterAttrs (_: t: t.enable) cfg.targets;
   active = name: enabledTargets ? ${name} && (lib.elem name standalone || (programEnabled.${name} or true));
@@ -652,14 +651,8 @@ in {
       '';
     })
 
-    # Through the module's extension list when it manages VS Code, so an
-    # immutable extensions directory takes it too; dropped into the
-    # extensions directory otherwise.
-    (mkIf (active "vscode" && config.programs.vscode.enable) {
+    (mkIf (active "vscode") {
       programs.vscode.profiles.default.extensions = [vscodeExtension];
-    })
-    (mkIf (active "vscode" && !config.programs.vscode.enable) {
-      home.file.".vscode/extensions/chromix.chromix-theme".source = "${vscodeExtension}/share/vscode/extensions/chromix.chromix-theme";
     })
 
     # Every profile the module declares that has no userChrome of its own.
