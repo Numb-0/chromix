@@ -109,7 +109,6 @@ self: {
     neovim = config.programs.neovim.enable;
     btop = config.programs.btop.enable;
     hyprlock = config.programs.hyprlock.enable;
-    hyprpaper = config.services.hyprpaper.enable;
     yazi = config.programs.yazi.enable;
     yazi-syntax = config.programs.yazi.enable;
   };
@@ -354,16 +353,6 @@ in {
           output = mkDefault "hyprlock/colors.conf";
         };
 
-        # hyprpaper only reads its config on start.
-        hyprpaper = {
-          enable = mkDefault programEnabled.hyprpaper;
-          template = mkDefault ../templates/hyprpaper.conf;
-          output = mkDefault "hyprpaper/wallpaper.conf";
-          reload = mkDefault ''
-            systemctl --user try-restart hyprpaper.service
-          '';
-        };
-
         # app:theme rereads theme.toml and the flavor; receiver 0 sends
         # it to every running yazi.
         yazi = {
@@ -390,6 +379,9 @@ in {
 
     (mkIf (active "morph-shell") {
       xdg.stateFile."morph-shell/colors.json".source = link cfg.targets.morph-shell.output;
+      # The shell draws the wallpaper itself, from the image the theme
+      # was made from; a theme made from a colour leaves it plain.
+      xdg.stateFile."morph-shell/wallpaper.json".source = link "chromix.json";
     })
 
     (mkIf (active "kitty") {
@@ -432,17 +424,6 @@ in {
     (mkIf (active "hyprlock") {
       programs.hyprlock.settings.source = ["${current}/${cfg.targets.hyprlock.output}"];
     })
-
-    (mkIf (active "hyprpaper") (let
-      # matugen renders {{image}} as "Null" for a colour-seeded theme.
-      imageless = lib.attrNames (lib.filterAttrs (_: t: t.image == null) cfg.themes);
-    in {
-      services.hyprpaper.settings.source = ["${current}/${cfg.targets.hyprpaper.output}"];
-
-      warnings = lib.optional (imageless != []) ''
-        programs.chromix.targets.hyprpaper: hyprpaper shows no wallpaper with themes made from a colour (${lib.concatStringsSep ", " imageless}).
-      '';
-    }))
 
     # yazi picks a flavor per terminal mode; chromix's own follows the
     # mode itself, so it serves both.

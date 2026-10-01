@@ -77,14 +77,13 @@ is rendered or linked for an app that is not there.
 
 | Target | Needs | Wired in through | Live reload |
 |---|---|---|---|
-| `morph-shell` | `programs.morph-shell` | `~/.local/state/morph-shell/colors.json` | `morph-shell ipc call palette reload`, fades |
+| `morph-shell` | `programs.morph-shell` | `~/.local/state/morph-shell/colors.json`, and `wallpaper.json` linked to the theme's `chromix.json`: the shell draws the theme's image as the wallpaper (plain surface for colour themes) | `morph-shell ipc call palette reload`, fades colours and crossfades the wallpaper |
 | `kitty` | `programs.kitty` | `include` in `programs.kitty.extraConfig` | `SIGUSR1` |
 | `hyprland` | `wayland.windowManager.hyprland` | `pcall(dofile, …)` (Lua config) or `source =` (hyprlang) in `extraConfig` | `hyprctl reload` |
 | `gtk` | `gtk` | `@import` in `gtk.gtk{3,4}.extraCss` | libadwaita follows `color-scheme`; `gtk.css` on next launch |
 | `neovim` | `programs.neovim` | `mini.base16` + `dofile` in `programs.neovim` | `luafile` over every nvim server |
 | `btop` | `programs.btop` | `~/.config/btop/themes/chromix.theme` + `color_theme` in `programs.btop.settings` | `SIGUSR2` |
 | `hyprlock` | `programs.hyprlock` | `source =` in `programs.hyprlock.settings`: `$m3…` colour variables and `$wallpaper` for your widgets | none needed, read on every lock |
-| `hyprpaper` | `services.hyprpaper` | `source =` in `services.hyprpaper.settings`: the theme's image on every monitor (none for colour themes) | restarts `hyprpaper.service` |
 | `yazi` | `programs.yazi` | `~/.config/yazi/flavors/chromix.yazi/flavor.toml` + `flavor` in `programs.yazi.theme` | `ya emit-to 0 app:theme` |
 | `yazi-syntax` | `programs.yazi` | `~/.config/yazi/flavors/chromix.yazi/tmtheme.xml`: code previews in the neovim target's base16 colours | with the `yazi` target's `app:theme` |
 
