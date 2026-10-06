@@ -23,6 +23,11 @@
       default = chromix;
     };
 
+    nixosModules = rec {
+      chromix = import ./nix/nixos-module.nix;
+      default = chromix;
+    };
+
     formatter = forAllSystems (pkgs: pkgs.alejandra);
   };
 }

@@ -62,6 +62,19 @@ programs.chromix = {
 };
 ```
 
+### Chromium's policy
+
+Chromium reads policies only from `/etc`, so the `chromium-policy`
+target needs the NixOS module too. It links the file one user's chromix
+renders into `/etc/chromium/policies/managed`, through `current/`, so a
+switch still needs no rebuild:
+
+```nix
+# nixos
+imports = [ inputs.chromix.nixosModules.default ];
+programs.chromix.chromiumPolicy.user = "alice";
+```
+
 ## Targets
 
 A built-in target switches on with its app's Home Manager module
@@ -94,9 +107,11 @@ is rendered or linked for an app that is not there.
 | `imv` | `programs.imv` | `~/.config/imv/config`, so leave `programs.imv.settings` empty | next image |
 | `vim` | `programs.vim` | `source` in `programs.vim.extraConfig` | on next start |
 | `vscode` | `programs.vscode` | a theme extension in `profiles.default.extensions`. Pick *Chromix Dark* and *Chromix Light* as `workbench.preferredDarkColorTheme` / `preferredLightColorTheme` with `window.autoDetectColorScheme` | a mode switch, or *Developer: Reload Window* |
-| `firefox` | `programs.firefox` | `chrome/userChrome.css` in every declared profile that has no `userChrome`, and the stylesheet pref through `policies` | on next start |
+| `firefox` | `programs.firefox` | `chrome/userChrome.css` in every declared profile that has no `userChrome`, and the stylesheet pref through `policies`. Written for the design tokens of Firefox 157 | on next start |
+| `firefox-content` | on with `firefox` | `chrome/userContent.css` in every declared profile that has no `userContent`: settings, add-ons, new tab and the other `about:` pages, which `userChrome.css` does not reach. Web pages are left alone | on next start |
 | `thunderbird` | `programs.thunderbird` | the same, with the pref in `programs.thunderbird.settings` | on next start |
-| `chromium` | `programs.chromium`, or Chromium installed any other way | `~/.local/share/chromix/chromium`, an unpacked theme: load it once with *Load unpacked* in `chrome://extensions` | *Reload* on the extension, or a restart |
+| `chromium` | `programs.chromium`, or Chromium installed any other way | `~/.local/share/chromix/chromium`, an unpacked theme: load it once with *Load unpacked* in `chrome://extensions`. A theme only reaches the frame, tabs, toolbar and new tab page | *Reload* on the extension, or a restart |
+| `chromium-policy` | on with `chromium`; wired in by the NixOS module | the theme's seed as the `BrowserThemeColor` policy, from which Chromium makes a Material palette for all of its UI, menus and settings included. It replaces any theme extension, the `chromium` target's too | *Reload policies* in `chrome://policy`, a restart, or by itself within 15 minutes |
 | `prismlauncher` | `programs.prismlauncher` | `themes/chromix/theme.json` and `ApplicationTheme` in `programs.prismlauncher.settings` | on next start |
 | `papirus` | `gtk.iconTheme.package = pkgs.papirus-icon-theme` | `~/.local/share/icons/Papirus-Chromix`: Papirus-Dark (Papirus-Light in light mode) with its folders in the Papirus colour nearest the seed. Set it as `gtk.iconTheme.name` | built on switch and on activation; GTK apps pick it up within seconds |
 

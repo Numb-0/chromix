@@ -5,70 +5,163 @@
    toolkit.legacyUserProfileCustomizations.stylesheets = true. The tab
    strip is the container, the toolbar and the selected tab the high
    container, so the page chrome reads as one surface with the tab you
-   are on. */
+   are on.
+
+   Written against the design tokens of Firefox 157 (with the Nova
+   redesign on or off). Firefox renames these from time to time, and a
+   token that no longer exists is silently ignored. The tokens are set
+   on the elements that redeclare them as well as on :root, as a value
+   set further down the tree would win over the inherited one. */
 
 :root,
-:root:-moz-lwtheme {
-  /* Tab strip */
-  --toolbox-bgcolor: {{colors.surface_container.default.hex}} !important;
-  --toolbox-bgcolor-inactive: {{colors.surface.default.hex}} !important;
-  --toolbox-textcolor: {{colors.on_surface.default.hex}} !important;
-  --toolbox-textcolor-inactive: {{colors.on_surface_variant.default.hex}} !important;
-  --lwt-accent-color: {{colors.surface_container.default.hex}} !important;
-  --lwt-accent-color-inactive: {{colors.surface.default.hex}} !important;
-  --lwt-text-color: {{colors.on_surface.default.hex}} !important;
-  --tab-selected-bgcolor: {{colors.surface_container_high.default.hex}} !important;
-  --tab-selected-textcolor: {{colors.on_surface.default.hex}} !important;
-  --tab-hover-background-color: {{colors.surface_container_highest.default.hex}} !important;
-  --tab-loading-fill: {{colors.primary.default.hex}} !important;
-  --tab-attention-icon-color: {{colors.primary.default.hex}} !important;
-  --lwt-tab-line-color: {{colors.primary.default.hex}} !important;
+menupopup,
+panel,
+#sidebar-main,
+#sidebar-box {
+  color-scheme: {{mode}} !important;
 
-  /* Toolbars */
-  --toolbar-bgcolor: {{colors.surface_container_high.default.hex}} !important;
-  --toolbar-color: {{colors.on_surface.default.hex}} !important;
+  /* Surfaces and text, which most of the UI is built from */
+  --background-color-canvas: {{colors.surface.default.hex}} !important;
+  --background-color-box: {{colors.surface_container_high.default.hex}} !important;
+  --background-color-box-info: {{colors.surface_container_highest.default.hex}} !important;
+  --background-color-dimmed: {{colors.on_surface.default.hex_alpha | set_alpha: 0.12}} !important;
+  --background-color-dimmed-further: {{colors.on_surface.default.hex_alpha | set_alpha: 0.16}} !important;
+  --background-color-list-item-hover: {{colors.on_surface.default.hex_alpha | set_alpha: 0.08}} !important;
+  --text-color: {{colors.on_surface.default.hex}} !important;
+  --text-color-deemphasized: {{colors.on_surface_variant.default.hex}} !important;
+  --text-color-list-item-hover: {{colors.on_surface.default.hex}} !important;
+  --border-color: {{colors.outline.default.hex}} !important;
+  --border-color-deemphasized: {{colors.outline_variant.default.hex}} !important;
+  --border-color-interactive: {{colors.outline.default.hex}} !important;
+  --border-color-interactive-hover: {{colors.on_surface.default.hex}} !important;
+  --border-color-interactive-active: {{colors.on_surface.default.hex}} !important;
+  --border-color-interactive-disabled: {{colors.on_surface.default.hex_alpha | set_alpha: 0.12}} !important;
+  --card-border-color: {{colors.outline_variant.default.hex}} !important;
+  --info-bar-border-color: {{colors.outline_variant.default.hex}} !important;
+
+  /* States */
+  --background-color-information: {{colors.secondary_container.default.hex}} !important;
+  --background-color-critical: {{colors.error_container.default.hex}} !important;
+  --background-color-success: {{colors.success_container.default.hex}} !important;
+  --background-color-warning: {{colors.warning_container.default.hex}} !important;
+  --icon-color-information: {{colors.secondary.default.hex}} !important;
+  --icon-color-critical: {{colors.error.default.hex}} !important;
+  --icon-color-success: {{colors.success.default.hex}} !important;
+  --icon-color-warning: {{colors.warning.default.hex}} !important;
+  --icon-color-accent-primary-desaturated: {{colors.on_surface_variant.default.hex}} !important;
+  --text-color-error: {{colors.error.default.hex}} !important;
+  --border-color-error: {{colors.error.default.hex}} !important;
+
+  /* Accents */
+  --color-accent-primary: {{colors.primary.default.hex}} !important;
+  --color-accent-primary-hover: color-mix(in srgb, {{colors.on_primary.default.hex}} 8%, {{colors.primary.default.hex}}) !important;
+  --color-accent-primary-active: color-mix(in srgb, {{colors.on_primary.default.hex}} 12%, {{colors.primary.default.hex}}) !important;
+  --color-accent-primary-selected: {{colors.primary.default.hex}} !important;
+  --text-color-accent-primary-selected: {{colors.on_primary.default.hex}} !important;
+  --color-accent-attention: {{colors.tertiary.default.hex}} !important;
+  --focus-outline-color: {{colors.primary.default.hex}} !important;
+  --link-color: {{colors.primary.default.hex}} !important;
+  --link-color-hover: {{colors.primary.default.hex}} !important;
+  --link-color-active: {{colors.primary.default.hex}} !important;
+
+  /* Buttons */
+  --button-background-color: {{colors.surface_container_highest.default.hex}} !important;
+  --button-background-color-hover: color-mix(in srgb, {{colors.on_surface.default.hex}} 8%, {{colors.surface_container_highest.default.hex}}) !important;
+  --button-background-color-active: color-mix(in srgb, {{colors.on_surface.default.hex}} 12%, {{colors.surface_container_highest.default.hex}}) !important;
+  --button-background-color-ghost: transparent !important;
+  --button-background-color-ghost-hover: {{colors.on_surface.default.hex_alpha | set_alpha: 0.08}} !important;
+  --button-background-color-ghost-active: {{colors.on_surface.default.hex_alpha | set_alpha: 0.12}} !important;
+  --button-background-color-muted: {{colors.surface_container_highest.default.hex}} !important;
+  --button-background-color-muted-hover: color-mix(in srgb, {{colors.on_surface.default.hex}} 8%, {{colors.surface_container_highest.default.hex}}) !important;
+  --button-background-color-muted-active: color-mix(in srgb, {{colors.on_surface.default.hex}} 12%, {{colors.surface_container_highest.default.hex}}) !important;
+  --button-background-color-primary-disabled: {{colors.on_surface.default.hex_alpha | set_alpha: 0.12}} !important;
+  --button-text-color: {{colors.on_surface.default.hex}} !important;
+  --button-text-color-primary: {{colors.on_primary.default.hex}} !important;
+  --button-background-color-destructive: {{colors.error.default.hex}} !important;
+  --button-background-color-destructive-hover: color-mix(in srgb, {{colors.on_error.default.hex}} 8%, {{colors.error.default.hex}}) !important;
+  --button-background-color-destructive-active: color-mix(in srgb, {{colors.on_error.default.hex}} 12%, {{colors.error.default.hex}}) !important;
+  --button-text-color-destructive: {{colors.on_error.default.hex}} !important;
+  --input-text-background-color: {{colors.surface_container_highest.default.hex}} !important;
+  --input-text-color: {{colors.on_surface.default.hex}} !important;
+
+  /* Tab strip */
+  --toolbox-background-color: {{colors.surface_container.default.hex}} !important;
+  --toolbox-background-color-inactive: {{colors.surface.default.hex}} !important;
+  --toolbox-background-color-gradient-leading: {{colors.surface_container.default.hex}} !important;
+  --toolbox-background-color-gradient-trailing: {{colors.surface_container.default.hex}} !important;
+  --toolbox-background-gradient: none !important;
+  --toolbox-text-color: {{colors.on_surface.default.hex}} !important;
+  --toolbox-text-color-inactive: {{colors.on_surface_variant.default.hex}} !important;
+  --tab-background-color: transparent !important;
+  --tab-background-color-hover: {{colors.on_surface.default.hex_alpha | set_alpha: 0.08}} !important;
+  --tab-background-color-selected: {{colors.surface_container_high.default.hex}} !important;
+  --tab-text-color: {{colors.on_surface_variant.default.hex}} !important;
+  --tab-text-color-hover: {{colors.on_surface.default.hex}} !important;
+  --tab-text-color-selected: {{colors.on_surface.default.hex}} !important;
+  --tab-border-color-selected-leading: {{colors.primary.default.hex}} !important;
+  --tab-border-color-selected-trailing: {{colors.tertiary.default.hex}} !important;
+  --tab-loading-fill: {{colors.primary.default.hex}} !important;
+  --tab-attention-dot-color: {{colors.primary.default.hex}} !important;
+  --tabs-navbar-separator-color: {{colors.outline_variant.default.hex}} !important;
+
+  /* Toolbars and the address bar */
+  --toolbar-background-color: {{colors.surface_container_high.default.hex}} !important;
+  --toolbar-text-color: {{colors.on_surface.default.hex}} !important;
   --toolbar-field-background-color: {{colors.surface_container_highest.default.hex}} !important;
-  --toolbar-field-color: {{colors.on_surface.default.hex}} !important;
+  --toolbar-field-background-color-focus: {{colors.surface_container_lowest.default.hex}} !important;
+  --toolbar-field-text-color: {{colors.on_surface.default.hex}} !important;
+  --toolbar-field-text-color-focus: {{colors.on_surface.default.hex}} !important;
   --toolbar-field-border-color: transparent !important;
-  --toolbar-field-focus-background-color: {{colors.surface_container_lowest.default.hex}} !important;
-  --toolbar-field-focus-color: {{colors.on_surface.default.hex}} !important;
-  --toolbar-field-focus-border-color: {{colors.primary.default.hex}} !important;
+  --toolbar-field-border-color-focus: {{colors.primary.default.hex}} !important;
   --toolbarbutton-icon-fill: {{colors.on_surface_variant.default.hex}} !important;
   --toolbarbutton-icon-fill-attention: {{colors.primary.default.hex}} !important;
-  --toolbarbutton-hover-background: {{colors.on_surface.default.hex_alpha | set_alpha: 0.08}} !important;
-  --toolbarbutton-active-background: {{colors.on_surface.default.hex_alpha | set_alpha: 0.12}} !important;
-  --urlbar-box-bgcolor: {{colors.surface_container_highest.default.hex}} !important;
+  --toolbarbutton-background-color-hover: {{colors.on_surface.default.hex_alpha | set_alpha: 0.08}} !important;
+  --toolbarbutton-background-color-active: {{colors.on_surface.default.hex_alpha | set_alpha: 0.12}} !important;
+  --urlbar-box-background-color: {{colors.on_surface.default.hex_alpha | set_alpha: 0.08}} !important;
+  --urlbar-box-background-color-hover: {{colors.on_surface.default.hex_alpha | set_alpha: 0.12}} !important;
+  --urlbar-box-background-color-active: {{colors.on_surface.default.hex_alpha | set_alpha: 0.16}} !important;
+  --urlbar-box-background-color-focus: {{colors.on_surface.default.hex_alpha | set_alpha: 0.08}} !important;
   --urlbar-box-text-color: {{colors.on_surface.default.hex}} !important;
-  --urlbar-box-hover-bgcolor: {{colors.surface_bright.default.hex}} !important;
-  --urlbarView-highlight-background: {{colors.secondary_container.default.hex}} !important;
-  --urlbarView-highlight-color: {{colors.on_secondary_container.default.hex}} !important;
-  --urlbarView-separator-color: {{colors.outline_variant.default.hex}} !important;
+  --urlbarview-background-color-hover: {{colors.on_surface.default.hex_alpha | set_alpha: 0.08}} !important;
+  --urlbarview-background-color-selected: {{colors.secondary_container.default.hex}} !important;
+  --urlbarview-text-color-selected: {{colors.on_secondary_container.default.hex}} !important;
+  --urlbarview-text-color-secondary: {{colors.on_surface_variant.default.hex}} !important;
+  --urlbarview-text-color-action: {{colors.primary.default.hex}} !important;
+  --urlbarview-separator-color: {{colors.outline_variant.default.hex}} !important;
   --chrome-content-separator-color: {{colors.outline_variant.default.hex}} !important;
+  --tabpanel-background-color: {{colors.surface.default.hex}} !important;
 
   /* Menus, panels and the sidebar */
-  --arrowpanel-background: {{colors.surface_container_high.default.hex}} !important;
-  --arrowpanel-color: {{colors.on_surface.default.hex}} !important;
-  --arrowpanel-border-color: {{colors.outline_variant.default.hex}} !important;
+  --panel-background-color: {{colors.surface_container_high.default.hex}} !important;
+  --panel-text-color: {{colors.on_surface.default.hex}} !important;
+  --panel-border-color: {{colors.outline_variant.default.hex}} !important;
   --panel-separator-color: {{colors.outline_variant.default.hex}} !important;
-  --sidebar-background-color: {{colors.surface_container_low.default.hex}} !important;
+  --panel-icon-fill: {{colors.on_surface_variant.default.hex}} !important;
+  --popup-background-color: {{colors.surface_container_high.default.hex}} !important;
+  --popup-border-color: {{colors.outline_variant.default.hex}} !important;
+  --promo-background-color: {{colors.surface_container_highest.default.hex}} !important;
+  --promo-background-color-vibrant: {{colors.primary_container.default.hex}} !important;
+  --promo-border-color: transparent !important;
+  --promo-border-color-vibrant: transparent !important;
+  --promo-heading-text-color: {{colors.on_surface.default.hex}} !important;
+  --promo-heading-text-color-vibrant: {{colors.on_primary_container.default.hex}} !important;
+  --promo-message-text-color: {{colors.on_surface_variant.default.hex}} !important;
+  --promo-message-text-color-vibrant: {{colors.on_primary_container.default.hex}} !important;
+  --sidebar-background-color: {{colors.surface_container.default.hex}} !important;
   --sidebar-text-color: {{colors.on_surface.default.hex}} !important;
   --sidebar-border-color: {{colors.outline_variant.default.hex}} !important;
 
-  /* Accents */
-  --focus-outline-color: {{colors.primary.default.hex}} !important;
-  --color-accent-primary: {{colors.primary.default.hex}} !important;
-  --color-accent-primary-hover: {{colors.primary.default.hex}} !important;
-  --color-accent-primary-active: {{colors.primary.default.hex}} !important;
-  --button-primary-bgcolor: {{colors.primary.default.hex}} !important;
-  --button-primary-color: {{colors.on_primary.default.hex}} !important;
-  --tabpanel-background-color: {{colors.surface_container_high.default.hex}} !important;
+  /* Read while an add-on theme is on, as some rules still go through them */
+  --lwt-accent-color: {{colors.surface_container.default.hex}} !important;
+  --lwt-accent-color-inactive: {{colors.surface.default.hex}} !important;
+  --lwt-text-color: {{colors.on_surface.default.hex}} !important;
+  --lwt-tab-line-color: {{colors.primary.default.hex}} !important;
 }
 
-menupopup,
-panel {
-  --panel-background: {{colors.surface_container_high.default.hex}} !important;
-  --panel-color: {{colors.on_surface.default.hex}} !important;
-  --panel-border-color: {{colors.outline_variant.default.hex}} !important;
+/* Menu items highlight with the system's colours, not a token. */
+:is(menu, menuitem)[_moz-menuactive]:not([disabled]) {
+  color: {{colors.on_surface.default.hex}} !important;
+  background-color: {{colors.on_surface.default.hex_alpha | set_alpha: 0.08}} !important;
 }
 
 ::selection {

@@ -126,13 +126,22 @@ self: {
     papirus = papirus != null;
   };
 
-  # Wired in without their app's module: its files land in a theme
-  # directory of chromix's own, whoever installed Chromium. It is still
-  # only on by default with the module.
-  standalone = ["chromium"];
+  # Wired in without their app's module: their files land in a
+  # directory of chromix's own, whoever installed Chromium. They are
+  # still only on by default with the module.
+  standalone = ["chromium" "chromium-policy"];
+
+  # Halves of another target, on whenever it is.
+  companion = {
+    firefox-content = "firefox";
+    chromium-policy = "chromium";
+  };
 
   enabledTargets = lib.filterAttrs (_: t: t.enable) cfg.targets;
-  active = name: enabledTargets ? ${name} && (lib.elem name standalone || (programEnabled.${name} or true));
+  active = name:
+    enabledTargets
+    ? ${name}
+    && (lib.elem name standalone || (programEnabled.${companion.${name} or name} or true));
 
   # Papirus from the gtk module, the only place an icon theme is set.
   papirus = let
@@ -515,6 +524,13 @@ in {
           output = mkDefault "firefox/userChrome.css";
         };
 
+        # userContent.css, for Firefox's own about: pages.
+        firefox-content = {
+          enable = mkDefault cfg.targets.firefox.enable;
+          template = mkDefault ../templates/firefox-content.css;
+          output = mkDefault "firefox/userContent.css";
+        };
+
         thunderbird = {
           enable = mkDefault programEnabled.thunderbird;
           template = mkDefault ../templates/thunderbird.css;
@@ -528,6 +544,19 @@ in {
           enable = mkDefault programEnabled.chromium;
           template = mkDefault ../templates/chromium.json;
           output = mkDefault "chromium/manifest.json";
+        };
+
+        # The theme's seed as Chromium's BrowserThemeColor policy, from
+        # which Chromium makes a Material palette of its own for all of
+        # its UI, menus and settings pages included, where a theme
+        # extension only reaches the frame, tabs and toolbar. A policy
+        # is only read from /etc: chromix's NixOS module links it there.
+        # Chromium rereads it on start, every 15 minutes, or with
+        # Reload policies in chrome://policy.
+        chromium-policy = {
+          enable = mkDefault cfg.targets.chromium.enable;
+          template = mkDefault ../templates/chromium-policy.json;
+          output = mkDefault "chromium/policy.json";
         };
 
         # Read at startup.
@@ -655,16 +684,28 @@ in {
       programs.vscode.profiles.default.extensions = [vscodeExtension];
     })
 
-    # Every profile the module declares that has no userChrome of its own.
-    (mkIf (active "firefox") {
+    # Both stylesheets are read only with this pref.
+    (mkIf (active "firefox" || active "firefox-content") {
       programs.firefox.policies.Preferences."toolkit.legacyUserProfileCustomizations.stylesheets" = {
         Value = true;
         Status = "default";
       };
+    })
+
+    # Every profile the module declares that has no userChrome of its own.
+    (mkIf (active "firefox") {
       home.file = lib.mapAttrs' (_: profile:
         lib.nameValuePair "${config.programs.firefox.profilesPath}/${profile.path}/chrome/userChrome.css" {
           source = link cfg.targets.firefox.output;
         }) (lib.filterAttrs (_: profile: profile.userChrome == "") config.programs.firefox.profiles);
+    })
+
+    # And no userContent of its own.
+    (mkIf (active "firefox-content") {
+      home.file = lib.mapAttrs' (_: profile:
+        lib.nameValuePair "${config.programs.firefox.profilesPath}/${profile.path}/chrome/userContent.css" {
+          source = link cfg.targets.firefox-content.output;
+        }) (lib.filterAttrs (_: profile: profile.userContent == "") config.programs.firefox.profiles);
     })
 
     (mkIf (active "thunderbird") {
