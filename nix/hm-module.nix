@@ -562,10 +562,12 @@ in {
           output = mkDefault "chromium/manifest.json";
         };
 
-        # The theme's seed as Chromium's BrowserThemeColor policy, from
+        # The frame colour as Chromium's BrowserThemeColor policy, from
         # which Chromium makes a Material palette of its own for all of
         # its UI, menus and settings pages included, where a theme
-        # extension only reaches the frame, tabs and toolbar. A policy
+        # extension only reaches the frame, tabs and toolbar. Not the
+        # seed: Chromium paints the frame in the policy colour itself,
+        # whatever its mode, so a bright seed makes a light window. A policy
         # is only read from /etc: chromix's NixOS module links it there.
         # Chromium rereads it on start, every 15 minutes, or with
         # Reload policies in chrome://policy.
