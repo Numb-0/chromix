@@ -54,8 +54,8 @@ panel,
 
   /* Accents */
   --color-accent-primary: {{colors.primary.default.hex}} !important;
-  --color-accent-primary-hover: color-mix(in srgb, {{colors.on_primary.default.hex}} 8%, {{colors.primary.default.hex}}) !important;
-  --color-accent-primary-active: color-mix(in srgb, {{colors.on_primary.default.hex}} 12%, {{colors.primary.default.hex}}) !important;
+  --color-accent-primary-hover: {{colors.primary.default.hex}} !important;
+  --color-accent-primary-active: {{colors.primary.default.hex}} !important;
   --color-accent-primary-selected: {{colors.primary.default.hex}} !important;
   --text-color-accent-primary-selected: {{colors.on_primary.default.hex}} !important;
   --color-accent-attention: {{colors.tertiary.default.hex}} !important;
@@ -93,13 +93,13 @@ panel,
   --toolbox-text-color: {{colors.on_surface.default.hex}} !important;
   --toolbox-text-color-inactive: {{colors.on_surface_variant.default.hex}} !important;
   --tab-background-color: transparent !important;
-  --tab-background-color-hover: {{colors.on_surface.default.hex_alpha | set_alpha: 0.08}} !important;
+  --tab-background-color-hover: {{colors.surface_container_highest.default.hex}} !important;
   --tab-background-color-selected: {{colors.surface_container_high.default.hex}} !important;
-  --tab-text-color: {{colors.on_surface_variant.default.hex}} !important;
+  --tab-text-color: {{colors.on_surface.default.hex}} !important;
   --tab-text-color-hover: {{colors.on_surface.default.hex}} !important;
   --tab-text-color-selected: {{colors.on_surface.default.hex}} !important;
   --tab-border-color-selected-leading: {{colors.primary.default.hex}} !important;
-  --tab-border-color-selected-trailing: {{colors.tertiary.default.hex}} !important;
+  --tab-border-color-selected-trailing: {{colors.primary.default.hex}} !important;
   --tab-loading-fill: {{colors.primary.default.hex}} !important;
   --tab-attention-dot-color: {{colors.primary.default.hex}} !important;
   --tabs-navbar-separator-color: {{colors.outline_variant.default.hex}} !important;
@@ -117,10 +117,10 @@ panel,
   --toolbarbutton-icon-fill-attention: {{colors.primary.default.hex}} !important;
   --toolbarbutton-background-color-hover: {{colors.on_surface.default.hex_alpha | set_alpha: 0.08}} !important;
   --toolbarbutton-background-color-active: {{colors.on_surface.default.hex_alpha | set_alpha: 0.12}} !important;
-  --urlbar-box-background-color: {{colors.on_surface.default.hex_alpha | set_alpha: 0.08}} !important;
-  --urlbar-box-background-color-hover: {{colors.on_surface.default.hex_alpha | set_alpha: 0.12}} !important;
-  --urlbar-box-background-color-active: {{colors.on_surface.default.hex_alpha | set_alpha: 0.16}} !important;
-  --urlbar-box-background-color-focus: {{colors.on_surface.default.hex_alpha | set_alpha: 0.08}} !important;
+  --urlbar-box-background-color: {{colors.surface_container_highest.default.hex}} !important;
+  --urlbar-box-background-color-hover: {{colors.surface_bright.default.hex}} !important;
+  --urlbar-box-background-color-active: {{colors.surface_bright.default.hex}} !important;
+  --urlbar-box-background-color-focus: {{colors.surface_container_highest.default.hex}} !important;
   --urlbar-box-text-color: {{colors.on_surface.default.hex}} !important;
   --urlbarview-background-color-hover: {{colors.on_surface.default.hex_alpha | set_alpha: 0.08}} !important;
   --urlbarview-background-color-selected: {{colors.secondary_container.default.hex}} !important;
@@ -129,7 +129,7 @@ panel,
   --urlbarview-text-color-action: {{colors.primary.default.hex}} !important;
   --urlbarview-separator-color: {{colors.outline_variant.default.hex}} !important;
   --chrome-content-separator-color: {{colors.outline_variant.default.hex}} !important;
-  --tabpanel-background-color: {{colors.surface.default.hex}} !important;
+  --tabpanel-background-color: {{colors.surface_container_high.default.hex}} !important;
 
   /* Menus, panels and the sidebar */
   --panel-background-color: {{colors.surface_container_high.default.hex}} !important;
@@ -147,7 +147,7 @@ panel,
   --promo-heading-text-color-vibrant: {{colors.on_primary_container.default.hex}} !important;
   --promo-message-text-color: {{colors.on_surface_variant.default.hex}} !important;
   --promo-message-text-color-vibrant: {{colors.on_primary_container.default.hex}} !important;
-  --sidebar-background-color: {{colors.surface_container.default.hex}} !important;
+  --sidebar-background-color: {{colors.surface_container_low.default.hex}} !important;
   --sidebar-text-color: {{colors.on_surface.default.hex}} !important;
   --sidebar-border-color: {{colors.outline_variant.default.hex}} !important;
 
