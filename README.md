@@ -135,6 +135,12 @@ either mode.
 **Configuring an app outside Home Manager?** Enable its target anyway
 (`targets.neovim.enable = true;`): the file is rendered and reloaded,
 just not wired in, so point the app at it yourself.
+Firefox and Thunderbird are wired in even then: at activation, chromix
+links their stylesheets into every profile their `profiles.ini` lists
+(`~/.mozilla/firefox`, `~/.config/mozilla/firefox`, `~/.thunderbird`),
+leaving alone any that is a file of your own. Set the
+`toolkit.legacyUserProfileCustomizations.stylesheets` pref wherever the
+app is configured, such as NixOS's `programs.firefox.preferences`.
 
 ### Your own targets
 

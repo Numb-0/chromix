@@ -158,6 +158,22 @@ self: {
   };
   papirusRun = "${lib.getExe papirusScript} ${papirus} ${cfg.targets.papirus.output}";
 
+  # Firefox and Thunderbird installed outside Home Manager: their
+  # stylesheets go into whatever profiles their profiles.ini lists.
+  profilesScript = pkgs.writeShellApplication {
+    name = "chromix-profiles";
+    runtimeInputs = with pkgs; [coreutils gawk];
+    text = builtins.readFile ./profiles.sh;
+  };
+  unmanaged = name: enabledTargets ? ${name} && !programEnabled.${companion.${name} or name};
+  stylesheet = file: target: lib.optional (unmanaged target) "${file}=${current}/${cfg.targets.${target}.output}";
+  firefoxSheets = stylesheet "userChrome.css" "firefox" ++ stylesheet "userContent.css" "firefox-content";
+  thunderbirdSheets = stylesheet "userChrome.css" "thunderbird";
+  linkProfiles = root: sheets:
+    lib.optionalString (sheets != []) ''
+      run ${lib.getExe profilesScript} ${lib.escapeShellArgs ([root] ++ sheets)}
+    '';
+
   # A theme-only VS Code extension. Its theme file points through
   # current/, so the extension itself never changes. The same file is
   # contributed twice so VS Code can pair one with each mode
@@ -714,6 +730,18 @@ in {
         lib.nameValuePair ".thunderbird/${name}/chrome/userChrome.css" {
           source = link cfg.targets.thunderbird.output;
         }) (lib.filterAttrs (_: profile: profile.userChrome == "") config.programs.thunderbird.profiles);
+    })
+
+    # The rest of the profiles, for apps Home Manager does not manage.
+    # Firefox keeps them in ~/.mozilla or, since moving to the XDG
+    # directories, in ~/.config/mozilla. Both still need the stylesheet
+    # pref, set wherever the app is.
+    (mkIf (firefoxSheets != [] || thunderbirdSheets != []) {
+      home.activation.chromixProfiles = lib.hm.dag.entryAfter ["chromix" "linkGeneration"] (
+        linkProfiles "${config.home.homeDirectory}/.mozilla/firefox" firefoxSheets
+        + linkProfiles "${config.xdg.configHome}/mozilla/firefox" firefoxSheets
+        + linkProfiles "${config.home.homeDirectory}/.thunderbird" thunderbirdSheets
+      );
     })
 
     # A directory of chromix's own: Chromium resolves symlinks when it
