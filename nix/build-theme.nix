@@ -1,6 +1,7 @@
 # One theme in one mode, rendered for every enabled target. The same
 # `chromix generate` does it at runtime for wallpapers, so a theme built
 # here and one made with `chromix wall` go through identical code.
+# postBuild adds what only a declared theme gets ahead of time.
 {
   runCommand,
   writeText,
@@ -10,7 +11,9 @@
   mode,
   source,
   generator,
+  postBuild ? "",
 }:
 runCommand "chromix-${name}-${mode}" {nativeBuildInputs = [chromix];} ''
   chromix generate ${writeText "chromix-${name}-${mode}.json" (builtins.toJSON (generator // {inherit mode source;}))} $out
+  ${postBuild}
 ''

@@ -153,10 +153,15 @@ self: {
 
   papirusScript = pkgs.writeShellApplication {
     name = "chromix-papirus";
-    runtimeInputs = with pkgs; [coreutils findutils gawk jq];
+    runtimeInputs = with pkgs; [coreutils findutils gawk jq perl];
     text = builtins.readFile ./papirus.sh;
   };
   papirusRun = "${lib.getExe papirusScript} ${papirus} ${cfg.targets.papirus.output}";
+  # Next to the seed in each declared theme, where papirusRun finds it
+  # and only has to link it.
+  papirusPrebuild = let
+    output = cfg.targets.papirus.output;
+  in "${papirusRun} $out $out/${dirOf output}/Papirus-Chromix";
 
   # Firefox and Thunderbird installed outside Home Manager: their
   # stylesheets go into whatever profiles their profiles.ini lists.
@@ -244,6 +249,7 @@ self: {
         buildTheme {
           inherit name mode source;
           generator = generator // {inherit (theme) type contrast;};
+          postBuild = lib.optionalString (active "papirus") papirusPrebuild;
         };
     in {
       dark = build "dark";
@@ -431,8 +437,10 @@ in {
             if command -v nvim >/dev/null; then
               for server in "''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"/nvim.*.0; do
                 [ -S "$server" ] || continue
-                nvim --server "$server" --remote-expr "execute('luafile $CHROMIX_CURRENT/nvim/colors.lua')" >/dev/null || true
+                # All at once: each waits on its nvim to load the file.
+                nvim --clean --server "$server" --remote-expr "execute('luafile $CHROMIX_CURRENT/nvim/colors.lua')" >/dev/null &
               done
+              wait
             fi
           '';
         };
@@ -584,8 +592,9 @@ in {
           output = mkDefault "prismlauncher/theme.json";
         };
 
-        # Only the seed: the folder colour nearest it is picked by
-        # chromix-papirus, which rebuilds Papirus-Chromix. GTK apps
+        # The seed, and in each declared theme Papirus-Chromix built next
+        # to it from the folder colour nearest the seed; chromix-papirus
+        # links that in, or builds one for a wallpaper theme. GTK apps
         # notice the changed theme on their own after a few seconds.
         papirus = {
           enable = mkDefault programEnabled.papirus;
@@ -758,8 +767,8 @@ in {
       programs.prismlauncher.settings.ApplicationTheme = mkDefault "chromix";
     })
 
-    # Built at activation too, after current is linked, so the theme is
-    # there before the first switch. Use it as gtk.iconTheme.name.
+    # Linked at activation too, after current is, so the theme is there
+    # before the first switch. Use it as gtk.iconTheme.name.
     (mkIf (active "papirus") {
       home.activation.chromixPapirus = lib.hm.dag.entryAfter ["chromix"] ''
         run env XDG_STATE_HOME=${config.xdg.stateHome} XDG_DATA_HOME=${config.xdg.dataHome} \

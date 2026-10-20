@@ -113,7 +113,7 @@ is rendered or linked for an app that is not there.
 | `chromium` | `programs.chromium`, or Chromium installed any other way | `~/.local/share/chromix/chromium`, an unpacked theme: load it once with *Load unpacked* in `chrome://extensions`. A theme only reaches the frame, tabs, toolbar and new tab page | *Reload* on the extension, or a restart |
 | `chromium-policy` | on with `chromium`; wired in by the NixOS module | the theme's frame colour (`surface_container`) as the `BrowserThemeColor` policy, from which Chromium makes a Material palette for all of its UI, menus and settings included. It replaces any theme extension, the `chromium` target's too | *Reload policies* in `chrome://policy`, a restart, or by itself within 15 minutes |
 | `prismlauncher` | `programs.prismlauncher` | `themes/chromix/theme.json` and `ApplicationTheme` in `programs.prismlauncher.settings` | on next start |
-| `papirus` | `gtk.iconTheme.package = pkgs.papirus-icon-theme` | `~/.local/share/icons/Papirus-Chromix`: Papirus-Dark (Papirus-Light in light mode) with its folders in the Papirus colour nearest the seed. Set it as `gtk.iconTheme.name` | built on switch and on activation; GTK apps pick it up within seconds |
+| `papirus` | `gtk.iconTheme.package = pkgs.papirus-icon-theme` | `~/.local/share/icons/Papirus-Chromix`: Papirus-Dark (Papirus-Light in light mode) with its folders in the Papirus colour nearest the seed. Set it as `gtk.iconTheme.name` | built with each declared theme and linked on switch and on activation (a wallpaper theme's is built on switch); GTK apps pick it up within seconds |
 
 **How the base16 palette is built.** A base16 scheme needs eight
 neutrals and eight accent hues, more than Material's roles provide.

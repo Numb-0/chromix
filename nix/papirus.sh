@@ -4,20 +4,43 @@
 # it in place. This builds Papirus-Chromix instead: a small icon theme
 # that inherits Papirus-Dark (or Papirus-Light in light mode) and holds
 # only folder icons, linked to the Papirus colour nearest the theme's
-# seed. Each colour and mode is built once and kept while in use; a
-# switch repoints one symlink.
+# seed.
 #
-# usage: chromix-papirus <papirus share/icons dir> <seed file in the theme>
+# usage: chromix-papirus <papirus share/icons dir> <seed file in the theme> [<theme dir> <out>]
+#
+# Given a theme directory and an out, it builds that theme's overlay
+# into out and stops: Nix does so for every declared theme, next to its
+# seed. Otherwise it points Papirus-Chromix at the current theme's
+# prebuilt overlay, or, for a wallpaper theme, which has none, builds
+# one into the state directory and keeps it while in use.
 
 icons="$1"
 seed_file="$2"
 
 state="${XDG_STATE_HOME:-$HOME/.local/state}/chromix"
-current="${CHROMIX_CURRENT:-$state/current}"
+theme="${3:-${CHROMIX_CURRENT:-$state/current}}"
+out="${4:-}"
 data="${XDG_DATA_HOME:-$HOME/.local/share}"
 
-seed="$(tr -d '[:space:]' <"$current/$seed_file")"
-mode="$(jq -r .mode "$current/chromix.json")"
+# Points Papirus-Chromix at an overlay, dropping any built here that
+# are not it: only the one in use is worth keeping.
+use() {
+  mkdir -p "$data/icons"
+  ln -sfn "$1" "$data/icons/Papirus-Chromix.new"
+  mv -T "$data/icons/Papirus-Chromix.new" "$data/icons/Papirus-Chromix"
+  if [ -d "$state/papirus" ]; then
+    find "$state/papirus" -mindepth 1 -maxdepth 1 ! -path "$1" -exec rm -rf {} +
+  fi
+}
+
+prebuilt="$theme/$(dirname "$seed_file")/Papirus-Chromix"
+if [ -z "$out" ] && [ -d "$prebuilt" ]; then
+  use "$(readlink -f "$prebuilt")"
+  exit 0
+fi
+
+seed="$(tr -d '[:space:]' <"$theme/$seed_file")"
+mode="$(jq -r .mode "$theme/chromix.json")"
 if [ "$mode" = light ]; then base=Papirus-Light; else base=Papirus-Dark; fi
 
 # Each colour's folder face, from Papirus's own SVGs. black, white and
@@ -54,7 +77,7 @@ color="$(echo "$palette" | tr ' ' '\n' | awk -F: -v seed="$seed" '
   END { print name }
 ')"
 
-dir="$state/papirus/$base-$color"
+dir="${out:-$state/papirus/$base-$color}"
 
 if [ ! -d "$dir" ]; then
   tmp="$dir.tmp"
@@ -72,18 +95,18 @@ if [ ! -d "$dir" ]; then
     names="$(cd "$src" && find . -maxdepth 1 -name '*.svg' -printf '%f\n' | sort)"
     targets="$(cd "$src" && echo "$names" | xargs -d '\n' readlink -f)"
     paste <(echo "$names") <(echo "$targets") |
-      awk -F'\t' -v color="$color" -v colors="$all_colors" '
+      awk -F'\t' -v color="$color" -v colors="$all_colors" -v src="$src" -v dst="$tmp/$size/places" '
         $1 ~ ("^(folder|user)-(" colors ")(-|\\.svg$)") { next }
         {
           n = split($2, parts, "/"); file = parts[n]
           if (file !~ /^(folder|user)-blue(-.*)?\.svg$/) next
           sub(/-blue/, "-" color, file)
-          print $1 "\t" file
-        }' |
-      while IFS="$(printf '\t')" read -r name file; do
-        [ -e "$src/$file" ] && ln -s "$(readlink -f "$src/$file")" "$tmp/$size/places/$name"
-      done
-  done
+          print src "/" file "\t" dst "/" $1
+        }'
+  done |
+    # One process for every link: an ln and a readlink apiece took
+    # seconds over the few hundred icons.
+    perl -MCwd=realpath -F'\t' -lane 'symlink(realpath($F[0]), $F[1]) or die "$F[1]: $!\n" if -e $F[0]'
 
   # The base theme's own entries for these directories, under a header
   # that names the overlay and hands everything else to the base.
@@ -101,13 +124,8 @@ if [ ! -d "$dir" ]; then
     keep { print }
   ' "$icons/$base/index.theme" >"$tmp/index.theme"
 
-  mkdir -p "$state/papirus"
+  mkdir -p "$(dirname "$dir")"
   mv "$tmp" "$dir"
 fi
 
-mkdir -p "$data/icons"
-ln -sfn "$dir" "$data/icons/Papirus-Chromix.new"
-mv -T "$data/icons/Papirus-Chromix.new" "$data/icons/Papirus-Chromix"
-
-# Only the one in use is worth keeping.
-find "$state/papirus" -mindepth 1 -maxdepth 1 ! -path "$dir" -exec rm -rf {} +
+[ -n "$out" ] || use "$dir"
